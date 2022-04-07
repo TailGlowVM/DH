@@ -308,7 +308,7 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 			if (!lastAttackedBy) return;
 			const damage = move.multihit ? move.totalDamage : lastAttackedBy.damage;
 			if (target.hp <= target.maxhp / 2 && target.hp + damage > target.maxhp / 2) {
-				this.boost({spa: 1});
+				this.boost({atk: 1, spa: 1});
 			}
 		},
 		name: "Berserk",
@@ -647,6 +647,9 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 				return this.chainModify(0.5);
 			}
 		},
+		onModifyPriority(priority, pokemon, target, move) {
+			if (move?.type === 'Flying' && pokemon.hp === pokemon.maxhp) return priority + 1;
+		},
 		name: "Defeatist",
 		rating: -1,
 		num: 129,
@@ -720,6 +723,14 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 		name: "Desolate Land",
 		rating: 4.5,
 		num: 190,
+	},
+	dimensionalstream: {
+		onStart(source) {
+			this.field.setPsuedoWeather('trickroom');
+		},
+		name: "Dimensional Stream",
+		rating: 4,
+		num: 267,
 	},
 	disguise: {
 		onDamagePriority: 1,
@@ -1070,6 +1081,7 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 			let mod = 1;
 			if (move.type === 'Fire') mod *= 2;
 			if (move.flags['contact']) mod /= 2;
+			if (effect.id === 'recoil') 
 			return this.chainModify(mod);
 		},
 		name: "Fluffy",
@@ -1180,7 +1192,7 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 	furcoat: {
 		onModifyDefPriority: 6,
 		onModifyDef(def) {
-			return this.chainModify(2);
+			return this.chainModify(1.5);
 		},
 		name: "Fur Coat",
 		rating: 4,
@@ -1491,7 +1503,7 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 		onDamagePriority: 1,
 		onDamage(damage, target, source, effect) {
 			if (
-				effect && effect.effectType === 'Move' && effect.category === 'Physical' &&
+				effect && effect.effectType === 'Move' &&
 				target.species.id === 'eiscue' && !target.transformed
 			) {
 				this.add('-activate', target, 'ability: Ice Face');
@@ -1501,14 +1513,14 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 		},
 		onCriticalHit(target, type, move) {
 			if (!target) return;
-			if (move.category !== 'Physical' || target.species.id !== 'eiscue' || target.transformed) return;
+			if (target.species.id !== 'eiscue' || target.transformed) return;
 			if (target.volatiles['substitute'] && !(move.flags['authentic'] || move.infiltrates)) return;
 			if (!target.runImmunity(move.type)) return;
 			return false;
 		},
 		onEffectiveness(typeMod, target, type, move) {
 			if (!target) return;
-			if (move.category !== 'Physical' || target.species.id !== 'eiscue' || target.transformed) return;
+			if (target.species.id !== 'eiscue' || target.transformed) return;
 			if (target.volatiles['substitute'] && !(move.flags['authentic'] || move.infiltrates)) return;
 			if (!target.runImmunity(move.type)) return;
 			return 0;
@@ -1857,7 +1869,12 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 		onModifyType(move, pokemon) {
 			if (move.flags['sound'] && !pokemon.volatiles['dynamax']) { // hardcode
 				move.type = 'Water';
+				move.liquidvoiceBoosted = true;
 			}
+		},
+		onBasePowerPriority: 23,
+		onBasePower(basePower, pokemon, target, move) {
+			if (move.liquidvoiceBoosted) return this.chainModify([0x1333, 0x1000]);
 		},
 		name: "Liquid Voice",
 		rating: 1.5,
@@ -1923,6 +1940,11 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 					return;
 				}
 				this.add('-item', source, yourItem, '[from] ability: Magician', '[of] ' + target);
+			}
+		onTakeItem(item, pokemon, source) {
+			if ((source && source !== pokemon) || this.activeMove.id === 'knockoff') {
+				this.add('-activate', pokemon, 'ability: Magician');
+				return false;
 			}
 		},
 		name: "Magician",
@@ -2752,7 +2774,7 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 			}
 		},
 		isUnbreakable: true,
-		name: "Prism Armor",
+		name: "Primal Armor",
 		rating: 3,
 		num: 232,
 	},
@@ -3163,13 +3185,6 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 		onStart(pokemon) {
 			let activated = false;
 			for (const sideCondition of ['reflect', 'lightscreen', 'auroraveil']) {
-				if (pokemon.side.getSideCondition(sideCondition)) {
-					if (!activated) {
-						this.add('-activate', pokemon, 'ability: Screen Cleaner');
-						activated = true;
-					}
-					pokemon.side.removeSideCondition(sideCondition);
-				}
 				if (pokemon.side.foe.getSideCondition(sideCondition)) {
 					if (!activated) {
 						this.add('-activate', pokemon, 'ability: Screen Cleaner');
@@ -3235,6 +3250,7 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 				this.debug('shed skin');
 				this.add('-activate', pokemon, 'ability: Shed Skin');
 				pokemon.cureStatus();
+				this.boost({spe: 1});
 			}
 		},
 		name: "Shed Skin",
@@ -3870,6 +3886,19 @@ export const Abilities: {[abilityid: string]: AbilityData} = {
 				this.debug('Thick Fat weaken');
 				return this.chainModify(0.5);
 			}
+		},
+		onUpdate(pokemon) {
+			if (pokemon.status === 'brn') {
+				this.add('-activate', pokemon, 'ability: Water Veil');
+				pokemon.cureStatus();
+			}
+		},
+		onSetStatus(status, target, source, effect) {
+			if (status.id !== 'brn') return;
+			if ((effect as Move)?.status) {
+				this.add('-immune', target, '[from] ability: Water Veil');
+			}
+			return false;
 		},
 		name: "Thick Fat",
 		rating: 3.5,

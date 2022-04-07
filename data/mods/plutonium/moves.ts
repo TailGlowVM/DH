@@ -287,8 +287,8 @@ export const Moves: {[moveid: string]: MoveData} = {
 	},
 	airslash: {
 		num: 403,
-		accuracy: 95,
-		basePower: 75,
+		accuracy: 100,
+		basePower: 80,
 		category: "Special",
 		name: "Air Slash",
 		pp: 15,
@@ -479,7 +479,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	armthrust: {
 		num: 292,
 		accuracy: 100,
-		basePower: 15,
+		basePower: 25,
 		category: "Physical",
 		name: "Arm Thrust",
 		pp: 20,
@@ -2996,7 +2996,12 @@ export const Moves: {[moveid: string]: MoveData} = {
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, mirror: 1},
-		secondary: null,
+		secondary: {
+			chance: 20,
+			boosts: {
+				accuracy: -1,
+			},
+		},
 		target: "allAdjacentFoes",
 		type: "Fairy",
 		contestType: "Beautiful",
@@ -3186,7 +3191,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		num: 591,
 		accuracy: 95,
 		basePower: 100,
-		category: "Physical",
+		category: "Special",
 		name: "Diamond Storm",
 		pp: 5,
 		priority: 0,
@@ -3556,7 +3561,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	dracometeor: {
 		num: 434,
 		accuracy: 90,
-		basePower: 130,
+		basePower: 140,
 		category: "Special",
 		name: "Draco Meteor",
 		pp: 5,
@@ -3617,7 +3622,12 @@ export const Moves: {[moveid: string]: MoveData} = {
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: null,
+		secondary: {
+			chance: 20,
+			boosts: {
+				def: -1,
+			},
+		},
 		target: "normal",
 		type: "Dragon",
 		contestType: "Cool",
@@ -3690,13 +3700,18 @@ export const Moves: {[moveid: string]: MoveData} = {
 	dragonpulse: {
 		num: 406,
 		accuracy: 100,
-		basePower: 85,
+		basePower: 95,
 		category: "Special",
 		name: "Dragon Pulse",
 		pp: 10,
 		priority: 0,
 		flags: {protect: 1, pulse: 1, mirror: 1, distance: 1},
-		secondary: null,
+		secondary: {
+			chance: 30,
+			boosts: {
+				spa: -1,
+			},
+		},
 		target: "any",
 		type: "Dragon",
 		contestType: "Beautiful",
@@ -3719,17 +3734,14 @@ export const Moves: {[moveid: string]: MoveData} = {
 	},
 	dragonrush: {
 		num: 407,
-		accuracy: 75,
-		basePower: 100,
+		accuracy: 100,
+		basePower: 40,
 		category: "Physical",
 		name: "Dragon Rush",
 		pp: 10,
-		priority: 0,
+		priority: +1,
 		flags: {contact: 1, protect: 1, mirror: 1},
-		secondary: {
-			chance: 20,
-			volatileStatus: 'flinch',
-		},
+		secondary: null,
 		target: "normal",
 		type: "Dragon",
 		contestType: "Tough",
@@ -3805,6 +3817,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, distance: 1},
+		critRatio: 2,
 		secondary: null,
 		target: "any",
 		type: "Flying",
@@ -3861,7 +3874,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	},
 	dualwingbeat: {
 		num: 814,
-		accuracy: 90,
+		accuracy: 95,
 		basePower: 40,
 		category: "Physical",
 		name: "Dual Wingbeat",
@@ -3869,7 +3882,10 @@ export const Moves: {[moveid: string]: MoveData} = {
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},
 		multihit: 2,
-		secondary: null,
+		secondary: {
+			chance: 20,
+			volatileStatus: 'flinch',
+		},
 		target: "normal",
 		type: "Flying",
 		maxMove: {basePower: 130},
@@ -4409,14 +4425,17 @@ export const Moves: {[moveid: string]: MoveData} = {
 	eternabeam: {
 		num: 795,
 		accuracy: 90,
-		basePower: 160,
+		basePower: 150,
 		category: "Special",
 		name: "Eternabeam",
 		pp: 10,
 		priority: 0,
-		flags: {recharge: 1, protect: 1, mirror: 1},
-		self: {
-			volatileStatus: 'mustrecharge',
+		flags: {protect: 1, mirror: 1},
+		mindBlownRecoil: true,
+		onAfterMove(pokemon, target, move) {
+			if (move.mindBlownRecoil && !move.multihit) {
+				this.damage(Math.round(pokemon.maxhp / 2), pokemon, pokemon, this.dex.getEffect('Eternabeam'), true);
+			}
 		},
 		secondary: null,
 		target: "normal",
@@ -4771,7 +4790,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	fireblast: {
 		num: 126,
 		accuracy: 85,
-		basePower: 110,
+		basePower: 120,
 		category: "Special",
 		name: "Fire Blast",
 		pp: 5,
@@ -4900,7 +4919,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	firepunch: {
 		num: 7,
 		accuracy: 100,
-		basePower: 75,
+		basePower: 80,
 		category: "Physical",
 		name: "Fire Punch",
 		pp: 15,
@@ -5154,7 +5173,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	flashcannon: {
 		num: 430,
 		accuracy: 100,
-		basePower: 80,
+		basePower: 85,
 		category: "Special",
 		name: "Flash Cannon",
 		pp: 10,
@@ -6084,7 +6103,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	glaciate: {
 		num: 549,
 		accuracy: 95,
-		basePower: 65,
+		basePower: 85,
 		category: "Special",
 		name: "Glaciate",
 		pp: 10,
@@ -7107,7 +7126,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	},
 	grasswhistle: {
 		num: 320,
-		accuracy: 55,
+		accuracy: 80,
 		basePower: 0,
 		category: "Status",
 		isNonstandard: "Past",
@@ -7660,7 +7679,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	},
 	headsmash: {
 		num: 457,
-		accuracy: 80,
+		accuracy: 100,
 		basePower: 150,
 		category: "Physical",
 		name: "Head Smash",
@@ -8493,7 +8512,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	hydropump: {
 		num: 56,
 		accuracy: 80,
-		basePower: 110,
+		basePower: 120,
 		category: "Special",
 		name: "Hydro Pump",
 		pp: 5,
@@ -8770,7 +8789,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	icepunch: {
 		num: 8,
 		accuracy: 100,
-		basePower: 75,
+		basePower: 80,
 		category: "Physical",
 		name: "Ice Punch",
 		pp: 15,
@@ -9446,7 +9465,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	leafstorm: {
 		num: 437,
 		accuracy: 90,
-		basePower: 130,
+		basePower: 140,
 		category: "Special",
 		name: "Leaf Storm",
 		pp: 5,
@@ -10042,7 +10061,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	magmastorm: {
 		num: 463,
 		accuracy: 75,
-		basePower: 100,
+		basePower: 120,
 		category: "Special",
 		name: "Magma Storm",
 		pp: 5,
@@ -11608,7 +11627,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	},
 	muddywater: {
 		num: 330,
-		accuracy: 85,
+		accuracy: 100,
 		basePower: 90,
 		category: "Special",
 		name: "Muddy Water",
@@ -12032,8 +12051,8 @@ export const Moves: {[moveid: string]: MoveData} = {
 	},
 	octazooka: {
 		num: 190,
-		accuracy: 85,
-		basePower: 65,
+		accuracy: 95,
+		basePower: 80,
 		category: "Special",
 		name: "Octazooka",
 		pp: 10,
@@ -12181,7 +12200,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 	overheat: {
 		num: 315,
 		accuracy: 90,
-		basePower: 130,
+		basePower: 140,
 		category: "Special",
 		name: "Overheat",
 		pp: 5,
@@ -12505,6 +12524,9 @@ export const Moves: {[moveid: string]: MoveData} = {
 		pp: 15,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
+		onModifyMove(move, pokemon) {
+			if (pokemon.getStat('spa', false, true) > pokemon.getStat('atk', false, true)) move.category = 'Special';
+		},
 		pseudoWeather: 'iondeluge',
 		secondary: null,
 		target: "normal",
@@ -12992,14 +13014,17 @@ export const Moves: {[moveid: string]: MoveData} = {
 	prismaticlaser: {
 		num: 711,
 		accuracy: 100,
-		basePower: 160,
+		basePower: 150,
 		category: "Special",
 		name: "Prismatic Laser",
 		pp: 10,
 		priority: 0,
-		flags: {recharge: 1, protect: 1, mirror: 1},
-		self: {
-			volatileStatus: 'mustrecharge',
+		flags: {protect: 1, mirror: 1},
+		mindBlownRecoil: true,
+		onAfterMove(pokemon, target, move) {
+			if (move.mindBlownRecoil && !move.multihit) {
+				this.damage(Math.round(pokemon.maxhp / 2), pokemon, pokemon, this.dex.getEffect('Prismatic Laser'), true);
+			}
 		},
 		secondary: null,
 		target: "normal",
@@ -14095,17 +14120,20 @@ export const Moves: {[moveid: string]: MoveData} = {
 	},
 	roaroftime: {
 		num: 459,
-		accuracy: 90,
-		basePower: 150,
+		accuracy: 100,
+		basePower: 100,
 		category: "Special",
 		name: "Roar of Time",
 		pp: 5,
 		priority: 0,
-		flags: {recharge: 1, protect: 1, mirror: 1},
-		self: {
-			volatileStatus: 'mustrecharge',
+		flags: {protect: 1, mirror: 1},
+		secondary: {
+			chance: 30,
+			boosts: {
+				spe: -1,
+			},
 		},
-		secondary: null,
+		tar
 		target: "normal",
 		type: "Dragon",
 		contestType: "Beautiful",

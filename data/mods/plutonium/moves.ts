@@ -11426,7 +11426,7 @@ export const Moves: {[moveid: string]: MoveData} = {
 		name: "Moonblast",
 		pp: 15,
 		priority: 0,
-		flags: {protect: 1, mirror: 1},
+		flags: {bullet: 1, protect: 1, mirror: 1},
 		secondary: {
 			chance: 30,
 			boosts: {
